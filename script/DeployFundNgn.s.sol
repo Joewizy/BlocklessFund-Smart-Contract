@@ -50,12 +50,3 @@ contract DeployFundNgn is Script {
         );
     }
 }
-
-//   cNGN Mock contract deployed: 0xfa2E05678f71859848812Fc28a3C11570dE7cF6b
-//   Crowdfunding contract deployed: 0xcDb5e4C288853E4DFdFB058d3dC52A59a417B710
-//   cNGN Mock contract deployed: 0x7FfebfF3C6a3ADBA55006cAF15be69b1e17bc659
-//   Crowdfunding contract deployed: 0xf25373Ab7c2a68BBC5271fdbd728C6FAc6c1fa0A
-
-// deployed:
-//   cNGN Mock contract deployed: 0x793c2f578926872366eA6aB416e0153Fa33aa56E
-//   Crowdfunding contract deployed: 0xf43237F67F5d1e1d0E9D92e2904f218E0b2553C3
