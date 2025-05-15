@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
-import { FundNgn } from "../src/FundNgn.sol";
-import { MockCNGN } from "./mocks/MockCNGN.sol";
+import {Test} from "forge-std/Test.sol";
+import {FundNgn} from "../src/FundNgn.sol";
+import {MockCNGN} from "./mocks/MockCNGN.sol";
 
 contract FundNgnTest is Test {
     FundNgn public fundNgn;
@@ -15,21 +15,21 @@ contract FundNgnTest is Test {
     address public VOTER2 = makeAddr("voter2");
     address public WHALE = makeAddr("whale");
 
-    uint256 public constant INITIAL_SUPPLY = 100_000_000 * 10**18; // 100 million cNGN tokens
-    uint256 public constant INITIAL_BALANCE = 10_000 * 10**18; 
-    uint256 public constant CAMPAIGN_GOAL = 500 * 10**18;
+    uint256 public constant INITIAL_SUPPLY = 100_000_000 * 10 ** 18; // 100 million cNGN tokens
+    uint256 public constant INITIAL_BALANCE = 10_000 * 10 ** 18;
+    uint256 public constant CAMPAIGN_GOAL = 500 * 10 ** 18;
     uint256 public constant CAMPAIGN_DURATION = 5 days;
     uint256 public constant VOTING_PERIOD = 7 days;
 
     function setUp() public {
         mockCGN = new MockCNGN("cNGN", "cNGN", INITIAL_SUPPLY);
         fundNgn = new FundNgn(address(mockCGN));
-        
+
         mockCGN.mint(USER, INITIAL_BALANCE);
         mockCGN.mint(CREATOR, INITIAL_BALANCE);
         mockCGN.mint(VOTER1, INITIAL_BALANCE);
         mockCGN.mint(VOTER2, INITIAL_BALANCE);
-        mockCGN.mint(WHALE, 1_000 * 10**18); // votes would be 5
+        mockCGN.mint(WHALE, 1_000 * 10 ** 18); // votes would be 5
     }
 
     function testCreateCampaign() public {
@@ -40,14 +40,16 @@ contract FundNgnTest is Test {
 
         string memory _title = "Youth Empowerment";
         string memory _description = "To empower youth with resources";
-        
+
         vm.expectEmit(true, true, true, true);
-        emit FundNgn.CampaignCreated(1, CREATOR, _title, CAMPAIGN_GOAL, block.timestamp, block.timestamp + CAMPAIGN_DURATION);
-        
+        emit FundNgn.CampaignCreated(
+            1, CREATOR, _title, CAMPAIGN_GOAL, block.timestamp, block.timestamp + CAMPAIGN_DURATION
+        );
+
         fundNgn.createCampaign(_title, _description, CAMPAIGN_GOAL, CAMPAIGN_DURATION);
-        
+
         FundNgn.Campaign memory campaign = fundNgn.getCampaign(1);
-        
+
         assertEq(campaign.id, 1);
         assertEq(campaign.creator, CREATOR);
         assertEq(campaign.title, _title);
@@ -70,7 +72,7 @@ contract FundNgnTest is Test {
         fundNgn.addToWhitelist(CREATOR);
 
         vm.startPrank(CREATOR);
-        
+
         vm.expectRevert(FundNgn.FundNgn__AmountMustBeGreaterThanZero.selector);
         fundNgn.createCampaign("Title", "Description", 0, CAMPAIGN_DURATION);
     }
@@ -80,7 +82,7 @@ contract FundNgnTest is Test {
         fundNgn.addToWhitelist(CREATOR);
 
         vm.startPrank(CREATOR);
-        
+
         vm.expectRevert(FundNgn.FundNgn__DurationMustBeGreaterThanZer0.selector);
         fundNgn.createCampaign("Title", "Description", CAMPAIGN_GOAL, 0);
     }
@@ -89,11 +91,11 @@ contract FundNgnTest is Test {
         fundNgn.addToWhitelist(CREATOR);
 
         vm.startPrank(CREATOR);
-        uint256 donatedAmount = 100 * 10**18; // 100 cNGN
+        uint256 donatedAmount = 100 * 10 ** 18; // 100 cNGN
 
         string memory _title = "Youth Empowerment";
         string memory _description = "To empower youth with resources";
-        
+
         fundNgn.createCampaign(_title, _description, CAMPAIGN_GOAL, CAMPAIGN_DURATION);
         vm.stopPrank();
 
@@ -101,10 +103,10 @@ contract FundNgnTest is Test {
         uint256 userStartBalance = mockCGN.balanceOf(USER);
 
         mockCGN.approve(address(fundNgn), donatedAmount); // approved 100cNGN tokens
-        
+
         vm.expectEmit(true, true, true, true);
         emit FundNgn.DonationReceived(1, USER, donatedAmount);
-        
+
         fundNgn.donate(1, donatedAmount);
         FundNgn.Campaign memory campaign = fundNgn.getCampaign(1);
 
@@ -126,10 +128,10 @@ contract FundNgnTest is Test {
         vm.warp(block.timestamp + CAMPAIGN_DURATION + 1);
 
         vm.startPrank(USER);
-        mockCGN.approve(address(fundNgn), 100 * 10**18);
-        
+        mockCGN.approve(address(fundNgn), 100 * 10 ** 18);
+
         vm.expectRevert(FundNgn.FundNgn__CampaignHasEnded.selector);
-        fundNgn.donate(1, 100 * 10**18);
+        fundNgn.donate(1, 100 * 10 ** 18);
     }
 
     function testWithdrawCampaignFunds() public {
@@ -139,14 +141,14 @@ contract FundNgnTest is Test {
         vm.startPrank(CREATOR);
         string memory _title = "Youth Empowerment";
         string memory _description = "To empower youth with resources";
-        
+
         fundNgn.createCampaign(_title, _description, CAMPAIGN_GOAL, CAMPAIGN_DURATION);
         vm.stopPrank();
 
         vm.startPrank(USER);
         uint256 userStartBalance = mockCGN.balanceOf(USER);
 
-        mockCGN.approve(address(fundNgn), CAMPAIGN_GOAL); 
+        mockCGN.approve(address(fundNgn), CAMPAIGN_GOAL);
         fundNgn.donate(1, CAMPAIGN_GOAL);
         vm.stopPrank();
 
@@ -155,10 +157,10 @@ contract FundNgnTest is Test {
 
         vm.startPrank(CREATOR);
         uint256 creatorStartBalance = mockCGN.balanceOf(CREATOR);
-        
+
         vm.expectEmit(true, true, true, true);
         emit FundNgn.FundsWithdrawn(1, CAMPAIGN_GOAL);
-        
+
         fundNgn.withdrawFunds(1);
 
         FundNgn.Campaign memory campaign = fundNgn.getCampaign(1);
@@ -254,7 +256,9 @@ contract FundNgnTest is Test {
         vm.startPrank(CREATOR);
         vm.expectEmit(true, true, true, true);
         emit FundNgn.ProposalExecuted(1);
-        emit FundNgn.CampaignCreated(1, CREATOR, "New Campaign", CAMPAIGN_GOAL, block.timestamp, block.timestamp + VOTING_PERIOD);
+        emit FundNgn.CampaignCreated(
+            1, CREATOR, "New Campaign", CAMPAIGN_GOAL, block.timestamp, block.timestamp + VOTING_PERIOD
+        );
 
         fundNgn.executeProposal(1);
 
@@ -299,8 +303,8 @@ contract FundNgnTest is Test {
         fundNgn.voteOnProposal(1, false);
         vm.stopPrank();
 
-        vm.warp(block.timestamp + VOTING_PERIOD + 1);   
-        
+        vm.warp(block.timestamp + VOTING_PERIOD + 1);
+
         uint256 expectVoteOneAndTwoVoteWeight = 10;
         uint256 expectedWhaleVoteWeight = 5;
 

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { Script, console } from "forge-std/Script.sol";
-import { FundNgn } from "../src/FundNgn.sol";
-import { MockCNGN } from "../test/mocks/MockCNGN.sol";
+import {Script, console} from "forge-std/Script.sol";
+import {FundNgn} from "../src/FundNgn.sol";
+import {MockCNGN} from "../test/mocks/MockCNGN.sol";
 
 contract DeployFundNgn is Script {
     address public mockCNGNAddress;
@@ -14,9 +14,9 @@ contract DeployFundNgn is Script {
 
         // Deploy the MockCNGN (mockCGN) contract
         MockCNGN mockCNGN = new MockCNGN(
-            "cNGN",             
-            "cNGN",             
-            100_000_000 * 10**18 // Initial supply: 100 million tokens
+            "cNGN",
+            "cNGN",
+            100_000_000 * 10 ** 18 // Initial supply: 100 million tokens
         );
         mockCNGNAddress = address(mockCNGN);
         console.log("cNGN Mock contract deployed:", mockCNGNAddress);

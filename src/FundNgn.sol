@@ -21,7 +21,7 @@ contract FundNgn is Ownable {
 
     uint256 private constant PRECISION = 1e18; // erc20 token has 18 decimals
     uint256 private constant VOTING_PERIOD = 7 days;
-    
+
     uint256 private campaignCount = 1;
     uint256 private proposalCount = 1;
 
@@ -58,40 +58,24 @@ contract FundNgn is Ownable {
     mapping(address => bool) public whitelisted;
 
     event CampaignCreated(
-        uint256 indexed id, 
-        address indexed creator, 
-        string title, 
-        uint256 goal, 
-        uint256 startTime, 
-        uint256 deadline
+        uint256 indexed id, address indexed creator, string title, uint256 goal, uint256 startTime, uint256 deadline
     );
-    
-    event DonationReceived(
-        uint256 indexed campaignId, 
-        address indexed donor, 
-        uint256 amount
-    );
-    
-    event FundsWithdrawn(
-        uint256 indexed campaignId, 
-        uint256 amount
-    );
-    
+
+    event DonationReceived(uint256 indexed campaignId, address indexed donor, uint256 amount);
+
+    event FundsWithdrawn(uint256 indexed campaignId, uint256 amount);
+
     event ProposalCreated(
-        uint256 indexed proposalId, 
-        address indexed proposer, 
-        string title, 
-        uint256 goal, 
-        uint256 startTime, 
+        uint256 indexed proposalId,
+        address indexed proposer,
+        string title,
+        uint256 goal,
+        uint256 startTime,
         uint256 deadline
     );
-    
-    event VotedOnProposal(
-        uint256 indexed proposalId, 
-        address indexed voter, 
-        bool inFavor
-    );
-    
+
+    event VotedOnProposal(uint256 indexed proposalId, address indexed voter, bool inFavor);
+
     event ProposalExecuted(uint256 indexed proposalId);
 
     constructor(address _cNGNAddress) Ownable(msg.sender) {
@@ -99,13 +83,15 @@ contract FundNgn is Ownable {
         whitelisted[msg.sender] = true;
     }
 
-    function createCampaign(string memory _title, string memory _description, uint256 _goal, uint256 _durationInSeconds) external {
+    function createCampaign(string memory _title, string memory _description, uint256 _goal, uint256 _durationInSeconds)
+        external
+    {
         if (!whitelisted[msg.sender]) {
             revert FundNgn__NotWhitelisted();
         }
         if (_goal == 0) {
             revert FundNgn__AmountMustBeGreaterThanZero();
-        } 
+        }
         if (_durationInSeconds == 0) {
             revert FundNgn__DurationMustBeGreaterThanZer0();
         }
@@ -268,7 +254,7 @@ contract FundNgn is Ownable {
         } else if (balance >= 1 * PRECISION) {
             return 1;
         } else {
-            return 0; 
+            return 0;
         }
     }
 
